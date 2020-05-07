@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.hgl</groupId>
     <artifactId>convertion</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <scm>
         <connection>scm:git:https://dev.lujociclas.net.co/gitbucket/git/hgl/convertion.git</connection>
         <url>https://dev.lujociclas.net.co/gitbucket/hgl/convertion</url>
         <developerConnection>scm:git:https://dev.lujociclas.net.co/gitbucket/git/hgl/convertion.git</developerConnection>
-        <tag>v1.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
