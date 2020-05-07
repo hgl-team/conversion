@@ -16,7 +16,7 @@ public class LocalizedDatePatternKey {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        com.lujociclas.administracion.facturador.convertion.LocalizedDatePatternKey that = (com.lujociclas.administracion.facturador.convertion.LocalizedDatePatternKey) o;
+        LocalizedDatePatternKey that = (LocalizedDatePatternKey) o;
         return pattern.equals(that.pattern) &&
                 locale.equals(that.locale);
     }
