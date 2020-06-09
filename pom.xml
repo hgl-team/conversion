@@ -67,5 +67,6 @@
     <modules>
         <module>convertion-api</module>
         <module>convertion-core</module>
+        <module>convertion-bom</module>
     </modules>
 </project>
