@@ -1,7 +1,7 @@
-package org.hgl.convertion;
+package org.hglteam.convertion;
 
-import org.hgl.convertion.api.ConverterContext;
-import org.hgl.convertion.api.TypeConverter;
+import org.hglteam.convertion.api.ConverterContext;
+import org.hglteam.convertion.api.TypeConverter;
 
 import java.util.HashMap;
 import java.util.Map;
