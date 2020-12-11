@@ -1,4 +1,4 @@
-package org.hgl.convertion.api;
+package org.hglteam.convertion.api;
 
 import java.util.function.Function;
 

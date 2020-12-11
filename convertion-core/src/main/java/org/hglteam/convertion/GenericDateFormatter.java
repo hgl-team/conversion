@@ -1,7 +1,7 @@
-package org.hgl.convertion;
+package org.hglteam.convertion;
 
-import org.hgl.convertion.api.DateFormatter;
-import org.hgl.convertion.api.DateFormatterContext;
+import org.hglteam.convertion.api.DateFormatter;
+import org.hglteam.convertion.api.DateFormatterContext;
 
 import java.text.ParseException;
 import java.time.format.DateTimeFormatter;

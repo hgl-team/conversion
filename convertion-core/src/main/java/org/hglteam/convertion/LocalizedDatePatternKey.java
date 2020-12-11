@@ -1,4 +1,4 @@
-package org.hgl.convertion;
+package org.hglteam.convertion;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

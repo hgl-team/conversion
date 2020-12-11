@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.hgl</groupId>
+    <groupId>org.hgltest</groupId>
     <artifactId>convertion</artifactId>
     <version>1.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
-
-    <scm>
-        <connection>scm:git:https://dev.lujociclas.com/gitbucket/git/hgl/convertion.git</connection>
-        <url>https://dev.lujociclas.com/gitbucket/hgl/convertion</url>
-        <developerConnection>scm:git:https://dev.lujociclas.com/gitbucket/git/hgl/convertion.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -53,16 +46,48 @@
         </plugins>
     </build>
 
-    <distributionManagement>
-        <repository>
-            <id>internal</id>
-            <url>https://dev.lujociclas.com/archiva/repository/internal/</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <url>https://dev.lujociclas.com/archiva/repository/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
+    <profiles>
+        <profile>
+            <id>archiva</id>
+            <properties>
+                <scm.connection>scm:git:https://dev.lujociclas.com/gitbucket/git/hgl/convertion.git</scm.connection>
+                <scm.url>https://dev.lujociclas.com/gitbucket/hgl/convertion</scm.url>
+                <scm.developerConnection>scm:git:https://dev.lujociclas.com/gitbucket/git/hgl/convertion.git</scm.developerConnection>
+            </properties>
+            <distributionManagement>
+                <repository>
+                    <id>internal</id>
+                    <url>https://dev.lujociclas.com/archiva/repository/internal/</url>
+                </repository>
+                <snapshotRepository>
+                    <id>snapshots</id>
+                    <url>https://dev.lujociclas.com/archiva/repository/snapshots/</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>github</id>
+            <properties>
+                <scm.connection>scm:git:https://github.com/hgl-team/convertion.git</scm.connection>
+                <scm.url>https://github.com/hgl-team/convertion</scm.url>
+                <scm.developerConnection>scm:git:https://github.com/hgl-team/convertion.git</scm.developerConnection>
+            </properties>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub hgl-team Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/hgl-team/convertion</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
+
+    <scm>
+        <connection>${scm.connection}</connection>
+        <url>${scm.url}</url>
+        <developerConnection>${scm.developerConnection}</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
 
     <modules>
         <module>convertion-api</module>

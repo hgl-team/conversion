@@ -1,6 +1,6 @@
-package org.hgl.convertion;
+package org.hglteam.convertion;
 
-import org.hgl.convertion.api.TypeConverter;
+import org.hglteam.convertion.api.TypeConverter;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

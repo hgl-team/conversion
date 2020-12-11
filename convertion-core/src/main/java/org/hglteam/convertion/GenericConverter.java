@@ -1,7 +1,7 @@
-package org.hgl.convertion;
+package org.hglteam.convertion;
 
-import org.hgl.convertion.api.Converter;
-import org.hgl.convertion.api.ConverterContext;
+import org.hglteam.convertion.api.Converter;
+import org.hglteam.convertion.api.ConverterContext;
 
 import java.util.function.Function;
 
