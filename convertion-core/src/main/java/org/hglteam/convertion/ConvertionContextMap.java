@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Optional;
 
 public class ConvertionContextMap implements ConverterContext {
-    private Map<ConverterKey, TypeConverter<?,?>> converterMap = new HashMap<>();
+    private final Map<ConverterKey, TypeConverter<?,?>> converterMap = new HashMap<>();
 
     @Override
-    public <TS, TD> TypeConverter<TS, TD> resolve(Class<TS> sourceClass, Class<TD> destinationClass) {
+    public <TS, TD> TypeConverter<TS, TD> resolve(Class<? extends TS> sourceClass, Class<? extends TD> destinationClass) {
         return Optional.of(new ConverterKey(sourceClass, destinationClass))
                 .map(this::<TS, TD>getConverter)
                 .orElseThrow(() -> new ConverterNotFoundException(sourceClass, destinationClass));
