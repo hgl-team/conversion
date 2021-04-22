@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.hglteam</groupId>
     <artifactId>convertion</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <packaging>pom</packaging>
 
     <name>convertion</name>
@@ -201,7 +201,7 @@
         <connection>${scm-connection}</connection>
         <url>${scm-url}</url>
         <developerConnection>${scm-developerConnection}</developerConnection>
-        <tag>v1.0.4</tag>
+        <tag>v1.0.5</tag>
     </scm>
 
     <modules>

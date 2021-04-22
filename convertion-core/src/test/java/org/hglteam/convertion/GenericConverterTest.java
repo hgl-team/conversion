@@ -9,11 +9,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GenericConverterTest {
 
+    public static final int EXPECTED_LONG_VALUE = 123456;
     private ConvertionContextMap context;
-    private ConvertidorEnteroABigInteger typeConverter;
+    private TypeConverter<?,?> typeConverter;
     private GenericConverter converter;
     private int integerToBeConverted;
     private BigInteger bigIntegerObtained;
+    private Generic<?> generic;
+    private Long longValue;
 
     @Test
     void convert() {
@@ -24,6 +27,35 @@ class GenericConverterTest {
 
         whenIntegerGetsConvertedToBigInteger();
         thenTheExpectedBigIntegerIsObtained();
+    }
+
+    @Test
+    void convertFromGeneric() {
+        givenAConvertionContext();
+        givenAGenericToLongTypeConverter();
+        givenAConverterUsingTheConvertionContext();
+        givenAGenericToBeConverted();
+
+        whenGenericGetsConvertedToLong();
+        thenTheExpectedLongIsObtained();
+    }
+
+    private void givenAGenericToBeConverted() {
+        this.generic = new Generic<BigInteger>(BigInteger.valueOf(EXPECTED_LONG_VALUE));
+    }
+
+    private void whenGenericGetsConvertedToLong() {
+        this.longValue = this.converter.convert(this.generic, Long.class);
+    }
+
+    private void thenTheExpectedLongIsObtained() {
+        assertNotNull(this.longValue);
+        assertEquals(EXPECTED_LONG_VALUE, this.longValue);
+    }
+
+    private void givenAGenericToLongTypeConverter() {
+        this.typeConverter = new GenericToLongConverter();
+        this.context.register(this.typeConverter);
     }
 
     private void givenAConvertionContext() {
@@ -60,4 +92,13 @@ class GenericConverterTest {
             return BigInteger.valueOf(source.longValue());
         }
     }
+
+    private static class GenericToLongConverter
+            implements TypeConverter<Generic<?>, Long> {
+        @Override
+        public Long convert(Generic<?> source) {
+            return source.number.longValue();
+        }
+    }
+
 }
