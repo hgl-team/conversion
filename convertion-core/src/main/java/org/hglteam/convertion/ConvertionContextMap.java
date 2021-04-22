@@ -24,7 +24,12 @@ public class ConvertionContextMap implements ConverterContext {
     }
 
     private <TS, TD> TypeConverter<TS, TD> getConverter(ConverterKey key) {
-        return (TypeConverter<TS, TD>) converterMap.get(key);
+        return converterMap.keySet().stream()
+                .filter(k -> k.equals(key))
+                .findAny()
+                .map(converterMap::get)
+                .map(TypeConverter.class::cast)
+                .orElseThrow();
     }
 
     public static class ConverterNotFoundException extends IllegalArgumentException {

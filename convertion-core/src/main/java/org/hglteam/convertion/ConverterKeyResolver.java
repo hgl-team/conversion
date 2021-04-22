@@ -10,7 +10,7 @@ public class ConverterKeyResolver {
 
     @SuppressWarnings("all")
     public static ConverterKey getConverterKey(TypeConverter<?,?> obj) {
-        Class<?>[] genericTypes = getGenericConverterTypes(obj);
+        Type[] genericTypes = getGenericConverterTypes(obj);
 
         return Optional.of(genericTypes)
                 .filter(converterGenericTypes -> converterGenericTypes.length == 2)
@@ -19,7 +19,7 @@ public class ConverterKeyResolver {
     }
 
     @SuppressWarnings("all")
-    private static Class<?>[] getGenericConverterTypes(Object instance) {
+    private static Type[] getGenericConverterTypes(Object instance) {
         Map<Type, Type> argumentMap = new HashMap<>();
         Class<?> currentSuperClass = instance.getClass();
         ParameterizedType converterInterfaceType = null;
@@ -36,9 +36,7 @@ public class ConverterKeyResolver {
 
         return Arrays.stream(converterInterfaceType.getActualTypeArguments())
                 .map(type -> Optional.of(type).filter(argumentMap::containsKey).map(argumentMap::get).orElse(type))
-                .filter(Class.class::isInstance)
-                .map(Class.class::cast)
-                .toArray(Class[]::new);
+                .toArray(Type[]::new);
     }
 
     private static ParameterizedType getConverterInterface(Class<?> superclass) {

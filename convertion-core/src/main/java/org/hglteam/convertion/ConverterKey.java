@@ -1,22 +1,24 @@
 package org.hglteam.convertion;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Objects;
 
 public class ConverterKey {
-    private final Class<?> sourceClass;
-    private final Class<?> destinationClass;
+    private final Type sourceClass;
+    private final Type targetClass;
 
-    public ConverterKey(Class<?> sourceClass, Class<?> destinationClass) {
+    public ConverterKey(Type sourceClass, Type targetClass) {
         this.sourceClass = sourceClass;
-        this.destinationClass = destinationClass;
+        this.targetClass = targetClass;
     }
 
-    public Class<?> getSourceClass() {
+    public Type getSourceClass() {
         return sourceClass;
     }
 
-    public Class<?> getDestinationClass() {
-        return destinationClass;
+    public Type getTargetClass() {
+        return targetClass;
     }
 
     @Override
@@ -24,13 +26,34 @@ public class ConverterKey {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ConverterKey that = (ConverterKey) o;
-        return sourceClass.equals(that.sourceClass) &&
-                destinationClass.equals(that.destinationClass);
+
+        var sourceCompatibility = checkTypeCompatibility(sourceClass, that.sourceClass);
+        var targetCompatibility = checkTypeCompatibility(targetClass, that.targetClass);
+
+        return sourceCompatibility && targetCompatibility;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sourceClass, destinationClass);
+        return Objects.hash(sourceClass, targetClass);
+    }
+
+    private boolean checkTypeCompatibility(Type thisType, Type thatType) {
+        var thisClass =
+                (thisType instanceof Class) ? (Class<?>) thisType
+                : (thisType instanceof ParameterizedType) ? (Class<?>)((ParameterizedType) thisType).getRawType()
+                : null;
+
+        var thatClass =
+                (thatType instanceof Class) ? (Class<?>) thatType
+                : (thatType instanceof ParameterizedType) ? (Class<?>)((ParameterizedType) thatType).getRawType()
+                : null;
+
+        if(Objects.nonNull(thisClass) && Objects.nonNull(thatClass)) {
+            return thisClass.isAssignableFrom(thatClass);
+        } else {
+            return Objects.equals(thisType, thatType);
+        }
     }
 }
 
