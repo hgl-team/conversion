@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GenericConverterTest {
 
     public static final int EXPECTED_LONG_VALUE = 123456;
-    private ConvertionContextMap context;
+    private ConversionContextMap context;
     private TypeConverter<?,?> typeConverter;
     private GenericConverter converter;
     private int integerToBeConverted;
@@ -59,7 +59,7 @@ class GenericConverterTest {
     }
 
     private void givenAConvertionContext() {
-        this.context = new ConvertionContextMap();
+        this.context = new ConversionContextMap();
     }
 
     private void givenAnIntegerToBigIntegerTypeConverter() {

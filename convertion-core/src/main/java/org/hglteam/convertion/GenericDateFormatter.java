@@ -1,7 +1,7 @@
 package org.hglteam.convertion;
 
 import org.hglteam.convertion.api.DateFormatter;
-import org.hglteam.convertion.api.DateFormatterContext;
+import org.hglteam.convertion.api.DateFormattingContext;
 
 import java.text.ParseException;
 import java.time.format.DateTimeFormatter;
@@ -12,9 +12,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class GenericDateFormatter implements DateFormatter {
-    private DateFormatterContext context;
+    private final DateFormattingContext context;
 
-    public GenericDateFormatter(DateFormatterContext context) {
+    public GenericDateFormatter(DateFormattingContext context) {
         this.context = context;
     }
 
