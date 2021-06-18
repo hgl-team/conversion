@@ -12,7 +12,7 @@ public class ConverterKeyResolverTest {
     @Nested
     public class GetConverterKey {
         private TypeConverter<?, ?> converter;
-        private ConverterKey converterKey;
+        private ConversionKey converterKey;
 
         @Test
         void getFromGenericSourceConverter () {
@@ -26,22 +26,21 @@ public class ConverterKeyResolverTest {
         }
 
         private void whenGetConverterKey() {
-            this.converterKey = ConverterKeyResolver.getConverterKey(this.converter);
+            this.converterKey = ConversionKeyResolver.getConverterKey(this.converter);
         }
 
         private void thenKeyDescriptionIsExpected() {
             assertNotNull(this.converterKey);
             assertNotNull(this.converterKey.getSourceClass());
             assertNotNull(this.converterKey.getTargetClass());
-            return;
         }
     }
 
     @Nested
     public class ConvertionKeyCompatibility {
         private TypeConverter<?, ?> converter;
-        private ConverterKey converterKey;
-        private ConverterKey compatibleKey;
+        private ConversionKey converterKey;
+        private ConversionKey compatibleKey;
         private boolean compatible;
 
         @Test
@@ -63,7 +62,7 @@ public class ConverterKeyResolverTest {
         }
 
         private void givenACompatibleGenericConvertionKey() {
-            this.compatibleKey = new ConverterKey(new TypeDescriptor<Generic<?>>(){}.getType(), Long.class);
+            this.compatibleKey = new ConversionKey(new TypeDescriptor<Generic<?>>(){}.getType(), Long.class);
         }
 
         private void whenCheckKeyEquality() {
@@ -75,8 +74,8 @@ public class ConverterKeyResolverTest {
         }
 
         private void givenACompatibleConvertionKey() {
-            var gtype = new Generic<Integer>(1);
-            this.compatibleKey = new ConverterKey(gtype.getClass(), Long.class);
+            var gtype = new Generic<>(1);
+            this.compatibleKey = new ConversionKey(gtype.getClass(), Long.class);
         }
 
         private void givenAGenericSourceConverter() {
@@ -84,34 +83,16 @@ public class ConverterKeyResolverTest {
         }
 
         private void givenAConvertionKeyFromTheConverter() {
-            this.converterKey = ConverterKeyResolver.getConverterKey(this.converter);
+            this.converterKey = ConversionKeyResolver.getConverterKey(this.converter);
         }
 
     }
 
-    public class GenericSourceConverter
-        implements TypeConverter<Generic<?>, Long>
+    public static class GenericSourceConverter implements TypeConverter<Generic<?>, Long>
     {
         @Override
         public Long convert(Generic<?> source) {
             return source.number.longValue();
         }
     }
-
-    public class GenericTargetConverter
-            implements TypeConverter<Integer, Generic<?>> {
-        @Override
-        public Generic<?> convert(Integer source) {
-            return new Generic<Integer>(source);
-        }
-    }
-
-    public class GenericSourceTargetConverter
-            implements TypeConverter<Generic<?>, Generic<?>> {
-        @Override
-        public Generic<?> convert(Generic<?> source) {
-            return new Generic<Long>(source.number.longValue());
-        }
-    }
-
 }

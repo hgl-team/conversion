@@ -4,11 +4,11 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
-public class ConverterKey {
+public class ConversionKey {
     private final Type sourceClass;
     private final Type targetClass;
 
-    public ConverterKey(Type sourceClass, Type targetClass) {
+    public ConversionKey(Type sourceClass, Type targetClass) {
         this.sourceClass = sourceClass;
         this.targetClass = targetClass;
     }
@@ -25,7 +25,7 @@ public class ConverterKey {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ConverterKey that = (ConverterKey) o;
+        ConversionKey that = (ConversionKey) o;
 
         var sourceCompatibility = checkTypeCompatibility(sourceClass, that.sourceClass);
         var targetCompatibility = checkTypeCompatibility(targetClass, that.targetClass);
