@@ -1,6 +1,6 @@
 package org.hglteam.convertion;
 
-import org.hglteam.convertion.api.DateFormatterContext;
+import org.hglteam.convertion.api.DateFormattingContext;
 
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -10,12 +10,12 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class GenericDateFormatterContext implements Serializable, DateFormatterContext {
-    private Map<LocalizedDatePatternKey, DateFormat> legacyFormatters = new HashMap<>();
-    private Map<LocalizedDatePatternKey, DateTimeFormatter> formatters = new HashMap<>();
+public class GenericDateFormattingContext implements Serializable, DateFormattingContext {
+    private final Map<LocalizedDatePatternKey, DateFormat> legacyFormatters = new HashMap<>();
+    private final Map<LocalizedDatePatternKey, DateTimeFormatter> formatters = new HashMap<>();
 
     @Override
-    public DateFormatterContext registerLegacy(String format, Locale locale) {
+    public DateFormattingContext registerLegacy(String format, Locale locale) {
         legacyFormatters.put(
                 new LocalizedDatePatternKey(format, locale),
                 new SimpleDateFormat(format, locale));
@@ -23,7 +23,7 @@ public class GenericDateFormatterContext implements Serializable, DateFormatterC
     }
 
     @Override
-    public DateFormatterContext register(String format, Locale locale) {
+    public DateFormattingContext register(String format, Locale locale) {
         formatters.put(
                 new LocalizedDatePatternKey(format, locale),
                 DateTimeFormatter.ofPattern(format, locale));

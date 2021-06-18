@@ -6,19 +6,17 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
-public class ConverterKeyResolver {
+public class ConversionKeyResolver {
 
-    @SuppressWarnings("all")
-    public static ConverterKey getConverterKey(TypeConverter<?,?> obj) {
+    public static ConversionKey getConverterKey(TypeConverter<?,?> obj) {
         Type[] genericTypes = getGenericConverterTypes(obj);
 
         return Optional.of(genericTypes)
                 .filter(converterGenericTypes -> converterGenericTypes.length == 2)
-                .map(converterGenericTypes -> new ConverterKey(converterGenericTypes[0], converterGenericTypes[1]))
-                .orElseThrow(InvalidConvertionTypeException::new);
+                .map(converterGenericTypes -> new ConversionKey(converterGenericTypes[0], converterGenericTypes[1]))
+                .orElseThrow(() -> InvalidConvertionTypeException.fromPartialResult(genericTypes));
     }
 
-    @SuppressWarnings("all")
     private static Type[] getGenericConverterTypes(Object instance) {
         Map<Type, Type> argumentMap = new HashMap<>();
         Class<?> currentSuperClass = instance.getClass();
@@ -31,7 +29,7 @@ public class ConverterKeyResolver {
         }
 
         if(Objects.isNull(converterInterfaceType)) {
-            throw new InvalidConvertionTypeException();
+            throw InvalidConvertionTypeException.fromInstance(instance);
         }
 
         return Arrays.stream(converterInterfaceType.getActualTypeArguments())
@@ -48,7 +46,7 @@ public class ConverterKeyResolver {
                 .orElse(null);
     }
 
-    private static void getGenericTypeArguments(Map<Type, Type> mapaArgumentos, Class<?> instanceClass) {
+    private static void getGenericTypeArguments(Map<Type, Type> argumentType, Class<?> instanceClass) {
         Type superclass = instanceClass.getGenericSuperclass();
 
         if(superclass instanceof ParameterizedType) {
@@ -57,14 +55,30 @@ public class ConverterKeyResolver {
             Type[] genericTypeArguments = parametricSuperclass.getActualTypeArguments();
 
             for (int i = 0; i < genericTypeParameters.length; i++) {
-                mapaArgumentos.put(genericTypeParameters[i], Optional.of(genericTypeArguments[i])
-                        .filter(mapaArgumentos::containsKey)
-                        .map(mapaArgumentos::get)
+                argumentType.put(genericTypeParameters[i], Optional.of(genericTypeArguments[i])
+                        .filter(argumentType::containsKey)
+                        .map(argumentType::get)
                         .orElse(genericTypeArguments[i]));
             }
         }
     }
 
     private static class InvalidConvertionTypeException extends IllegalArgumentException {
+        private static final String PARTIAL_RESULT_MESSAGE_FORMAT = "Partial types found: %s";
+        private static final String INVALID_INSTANCE_MESSAGE_FORMAT = "Illegal instance type %s";
+
+        public InvalidConvertionTypeException(String message) {
+            super(message);
+        }
+
+        public static InvalidConvertionTypeException fromPartialResult(Type[] partialResults) {
+            return new InvalidConvertionTypeException(String.format(PARTIAL_RESULT_MESSAGE_FORMAT,
+                    Arrays.toString(partialResults)));
+        }
+
+        public static InvalidConvertionTypeException fromInstance(Object instance) {
+            return new InvalidConvertionTypeException(String.format(INVALID_INSTANCE_MESSAGE_FORMAT,
+                    instance.getClass()));
+        }
     }
 }
