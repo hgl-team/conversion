@@ -3,7 +3,7 @@
     <parent>
         <artifactId>convertion</artifactId>
         <groupId>org.hglteam</groupId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.1.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>convertion-bom</artifactId>
@@ -19,6 +19,11 @@
             <dependency>
                 <groupId>org.hglteam</groupId>
                 <artifactId>convertion-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hglteam</groupId>
+                <artifactId>convertion-spring-binding</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
