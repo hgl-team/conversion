@@ -2,11 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.hglteam</groupId>
-    <artifactId>convertion</artifactId>
+    <artifactId>conversion</artifactId>
     <version>1.1.2-SNAPSHOT</version>
     <packaging>pom</packaging>
-
-    <name>convertion</name>
+    <name>conversion</name>
     <description>Small set of classes to convert POJOs</description>
     <url>https://github.com/hgl-team/convertion</url>
     <licenses>
@@ -201,9 +200,9 @@
     </scm>
 
     <modules>
-        <module>convertion-api</module>
-        <module>convertion-core</module>
-        <module>convertion-bom</module>
-        <module>convertion-spring-binding</module>
+        <module>conversion-api</module>
+        <module>conversion-core</module>
+        <module>conversion-bom</module>
+        <module>conversion-spring-binding</module>
     </modules>
 </project>
