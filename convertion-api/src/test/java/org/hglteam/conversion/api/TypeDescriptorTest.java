@@ -1,4 +1,4 @@
-package org.hglteam.convertion.api;
+package org.hglteam.conversion.api;
 
 import org.junit.jupiter.api.Test;
 

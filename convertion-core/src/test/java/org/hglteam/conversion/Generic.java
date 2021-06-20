@@ -1,4 +1,4 @@
-package org.hglteam.convertion;
+package org.hglteam.conversion;
 
 public class Generic<T extends Number> {
     public final T number;

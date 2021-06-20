@@ -1,7 +1,6 @@
-package org.hglteam.convertion;
+package org.hglteam.conversion;
 
-import org.hglteam.convertion.api.Converter;
-import org.hglteam.convertion.api.ConversionContext;
+import org.hglteam.conversion.api.*;
 
 import java.util.function.Function;
 
@@ -13,9 +12,15 @@ public class GenericConverter implements Converter {
     }
 
     @Override
-    public <TS, TD> TD convert(TS source, Class<? extends TS> sourceClass, Class<? extends TD> targetClass) {
-        var converter = conversionContext.<TS, TD>resolve(sourceClass, targetClass);
+    @SuppressWarnings("unchecked")
+    public <TS, TD> TD convert(TS source, ConversionKey contersionKey) {
+        var converter = (TypeConverter<TS, TD>) conversionContext.resolve(contersionKey);
         return converter.convert(source);
+    }
+
+    @Override
+    public <TS, TD> TD convert(TS source, Class<? extends TS> sourceClass, Class<? extends TD> targetClass) {
+        return this.convert(source, ConversionKeyResolver.getConverterKey(sourceClass, targetClass));
     }
 
     @Override
@@ -31,5 +36,10 @@ public class GenericConverter implements Converter {
     @Override
     public <TS, TD> Function<TS, TD> convertTo(Class<? extends TD> targetClass) {
         return source -> convert(source, targetClass);
+    }
+
+    @Override
+    public <TS, TD> Function<TS, TD> convertTo(ConversionKey conversionKey) {
+        return source -> convert(source, conversionKey);
     }
 }

@@ -1,9 +1,9 @@
-package org.hglteam.convertion;
+package org.hglteam.conversion;
 
-import org.hglteam.convertion.api.ConversionContext;
-import org.hglteam.convertion.api.Converter;
-import org.hglteam.convertion.api.DateFormatter;
-import org.hglteam.convertion.api.DateFormattingContext;
+import org.hglteam.conversion.api.ConversionContext;
+import org.hglteam.conversion.api.Converter;
+import org.hglteam.conversion.api.DateFormatter;
+import org.hglteam.conversion.api.DateFormattingContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class ConversionConfiguration {
     @Bean
     public ConversionContext conversionContext() {
-        return new ConversionContextMap();
+        return new ConversionTableContext();
     }
 
     @Bean

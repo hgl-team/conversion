@@ -1,6 +1,7 @@
-package org.hglteam.convertion;
+package org.hglteam.conversion;
 
-import org.hglteam.convertion.api.TypeConverter;
+import org.hglteam.conversion.api.GenericConversionKey;
+import org.hglteam.conversion.api.TypeConverter;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -10,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GenericConverterTest {
 
     public static final int EXPECTED_LONG_VALUE = 123456;
-    private ConversionContextMap context;
+    private ConversionTableContext context;
     private TypeConverter<?,?> typeConverter;
     private GenericConverter converter;
     private int integerToBeConverted;
@@ -41,11 +42,11 @@ class GenericConverterTest {
     }
 
     private void givenAGenericToBeConverted() {
-        this.generic = new Generic<BigInteger>(BigInteger.valueOf(EXPECTED_LONG_VALUE));
+        this.generic = new Generic<>(BigInteger.valueOf(EXPECTED_LONG_VALUE));
     }
 
     private void whenGenericGetsConvertedToLong() {
-        this.longValue = this.converter.convert(this.generic, Long.class);
+        this.longValue = this.converter.convert(this.generic, new GenericConversionKey<Generic<?>, Long>(){});
     }
 
     private void thenTheExpectedLongIsObtained() {
@@ -59,7 +60,7 @@ class GenericConverterTest {
     }
 
     private void givenAConvertionContext() {
-        this.context = new ConversionContextMap();
+        this.context = new ConversionTableContext();
     }
 
     private void givenAnIntegerToBigIntegerTypeConverter() {

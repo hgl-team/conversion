@@ -1,6 +1,9 @@
-package org.hglteam.convertion;
+package org.hglteam.conversion;
 
-import org.hglteam.convertion.api.TypeConverter;
+import org.hglteam.conversion.api.ConversionKey;
+import org.hglteam.conversion.api.DefaultConvertionKey;
+import org.hglteam.conversion.api.ExplicitTypeConverter;
+import org.hglteam.conversion.api.TypeConverter;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -9,12 +12,26 @@ import java.util.*;
 public class ConversionKeyResolver {
 
     public static ConversionKey getConverterKey(TypeConverter<?,?> obj) {
-        Type[] genericTypes = getGenericConverterTypes(obj);
+        if(obj instanceof ExplicitTypeConverter) {
+            return ((ExplicitTypeConverter<?, ?>) obj).getConversionKey();
+        } else {
+            Type[] genericTypes = getGenericConverterTypes(obj);
 
-        return Optional.of(genericTypes)
-                .filter(converterGenericTypes -> converterGenericTypes.length == 2)
-                .map(converterGenericTypes -> new ConversionKey(converterGenericTypes[0], converterGenericTypes[1]))
-                .orElseThrow(() -> InvalidConvertionTypeException.fromPartialResult(genericTypes));
+            return Optional.of(genericTypes)
+                    .filter(converterGenericTypes -> converterGenericTypes.length == 2)
+                    .map(converterGenericTypes -> DefaultConvertionKey.builder()
+                            .source(converterGenericTypes[0])
+                            .target(converterGenericTypes[1])
+                            .build())
+                    .orElseThrow(() -> InvalidConvertionTypeException.fromPartialResult(genericTypes));
+        }
+    }
+
+    public static ConversionKey getConverterKey(Type source, Type target) {
+        return DefaultConvertionKey.builder()
+                .source(source)
+                .target(target)
+                .build();
     }
 
     private static Type[] getGenericConverterTypes(Object instance) {

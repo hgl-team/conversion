@@ -1,7 +1,7 @@
-package org.hglteam.convertion;
+package org.hglteam.conversion;
 
-import org.hglteam.convertion.api.ConversionContext;
-import org.hglteam.convertion.api.Converter;
+import org.hglteam.conversion.api.ConversionContext;
+import org.hglteam.conversion.api.Converter;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter;
 
@@ -19,7 +19,7 @@ public class SpringBindingConverter implements GenericConverter {
 
     @Override
     public Set<ConvertiblePair> getConvertibleTypes() {
-        return this.conversionContext.getAvailableConversionPairs().stream()
+        return this.conversionContext.getAvailableConversions().stream()
                 .filter(pair -> pair.getSource() instanceof Class && pair.getTarget() instanceof Class)
                 .map(pair -> new ConvertiblePair((Class<?>) pair.getSource(), (Class<?>) pair.getTarget()))
                 .collect(Collectors.toUnmodifiableSet());

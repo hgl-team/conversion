@@ -1,6 +1,6 @@
-package org.hglteam.convertion;
+package org.hglteam.conversion;
 
-import org.hglteam.convertion.api.DateFormattingContext;
+import org.hglteam.conversion.api.DateFormattingContext;
 
 import java.io.Serializable;
 import java.text.DateFormat;
