@@ -2,11 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.hglteam</groupId>
-    <artifactId>convertion</artifactId>
-    <version>1.1.0</version>
+    <artifactId>conversion</artifactId>
+    <version>2.0.0</version>
     <packaging>pom</packaging>
-
-    <name>convertion</name>
+    <name>conversion</name>
     <description>Small set of classes to convert POJOs</description>
     <url>https://github.com/hgl-team/convertion</url>
     <licenses>
@@ -102,49 +101,10 @@
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
     <profiles>
-        <profile>
-            <id>archiva</id>
-            <distributionManagement>
-                <repository>
-                    <id>internal</id>
-                    <url>https://dev.lujociclas.com/archiva/repository/internal/</url>
-                </repository>
-                <snapshotRepository>
-                    <id>snapshots</id>
-                    <url>https://dev.lujociclas.com/archiva/repository/snapshots/</url>
-                </snapshotRepository>
-            </distributionManagement>
-        </profile>
         <profile>
             <id>github</id>
             <distributionManagement>
@@ -159,6 +119,32 @@
             <id>ossrh</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -210,13 +196,13 @@
         <connection>${scm-connection}</connection>
         <url>${scm-url}</url>
         <developerConnection>${scm-developerConnection}</developerConnection>
-        <tag>v1.1.0</tag>
+        <tag>v2.0.0</tag>
     </scm>
 
     <modules>
-        <module>convertion-api</module>
-        <module>convertion-core</module>
-        <module>convertion-bom</module>
-        <module>convertion-spring-binding</module>
+        <module>conversion-api</module>
+        <module>conversion-core</module>
+        <module>conversion-bom</module>
+        <module>conversion-spring-binding</module>
     </modules>
 </project>
