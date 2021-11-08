@@ -2,6 +2,7 @@ package org.hglteam.conversion;
 
 import org.hglteam.conversion.api.GenericConversionKey;
 import org.hglteam.conversion.api.TypeConverter;
+import org.hglteam.conversion.api.context.TypeConversionContext;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -89,7 +90,7 @@ class GenericConverterTest {
 
     private static class ConvertidorEnteroABigInteger implements TypeConverter<Integer, BigInteger> {
         @Override
-        public BigInteger convert(Integer source) {
+        public BigInteger convert(TypeConversionContext context, Integer source) {
             return BigInteger.valueOf(source.longValue());
         }
     }
@@ -97,7 +98,7 @@ class GenericConverterTest {
     private static class GenericToLongConverter
             implements TypeConverter<Generic<?>, Long> {
         @Override
-        public Long convert(Generic<?> source) {
+        public Long convert(TypeConversionContext context, Generic<?> source) {
             return source.number.longValue();
         }
     }

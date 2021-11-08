@@ -2,6 +2,7 @@ package org.hglteam.conversion;
 
 import org.hglteam.conversion.api.GenericTypeConverter;
 import org.hglteam.conversion.api.TypeConverter;
+import org.hglteam.conversion.api.context.TypeConversionContext;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +32,7 @@ public class ConverterKeyResolverTest {
         }
 
         private void givenALambdaConverter() {
-            this.converter = new GenericTypeConverter<>(BigDecimal::toString) { };
+            this.converter = new GenericTypeConverter<BigDecimal, String>((context, value) -> value.toString()) { };
         }
 
         private void givenAGenericSourceConverter() {
@@ -52,7 +53,7 @@ public class ConverterKeyResolverTest {
     public static class GenericSourceConverter implements TypeConverter<Generic<?>, Long>
     {
         @Override
-        public Long convert(Generic<?> source) {
+        public Long convert(TypeConversionContext context, Generic<?> source) {
             return source.number.longValue();
         }
     }
