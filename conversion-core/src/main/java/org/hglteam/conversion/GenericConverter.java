@@ -1,6 +1,7 @@
 package org.hglteam.conversion;
 
 import org.hglteam.conversion.api.*;
+import org.hglteam.conversion.api.context.TypeConversionContext;
 
 import java.util.function.Function;
 
@@ -13,33 +14,39 @@ public class GenericConverter implements Converter {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <TS, TD> TD convert(TS source, ConversionKey contersionKey) {
+    public <TS, TD> TD convert(TS source, ConversionKey contersionKey, Object... args) {
         var converter = (TypeConverter<TS, TD>) conversionContext.resolve(contersionKey);
-        return converter.convert(source);
+        var context = TypeConversionContext.builder()
+                .converter(this)
+                .currentConversionKey(contersionKey)
+                .arguments(args)
+                .build();
+
+        return converter.convert(context, source);
     }
 
     @Override
-    public <TS, TD> TD convert(TS source, Class<? extends TS> sourceClass, Class<? extends TD> targetClass) {
-        return this.convert(source, ConversionKeyResolver.getConverterKey(sourceClass, targetClass));
+    public <TS, TD> TD convert(TS source, Class<? extends TS> sourceClass, Class<? extends TD> targetClass, Object... args) {
+        return this.convert(source, ConversionKeyResolver.getConverterKey(sourceClass, targetClass), args);
     }
 
     @Override
-    public <TS, TD> TD convert(TS source, Class<? extends TD> targetClass) {
-        return convert(source, source.getClass(), targetClass);
+    public <TS, TD> TD convert(TS source, Class<? extends TD> targetClass, Object... args) {
+        return convert(source, source.getClass(), targetClass, args);
     }
 
     @Override
-    public <TS, TD> Function<TS, TD> convertTo(Class<? extends TS> sourceClass, Class<? extends TD> targetClass) {
-        return source -> convert(source, sourceClass, targetClass);
+    public <TS, TD> Function<TS, TD> convertTo(Class<? extends TS> sourceClass, Class<? extends TD> targetClass, Object... args) {
+        return source -> convert(source, sourceClass, targetClass, args);
     }
 
     @Override
-    public <TS, TD> Function<TS, TD> convertTo(Class<? extends TD> targetClass) {
-        return source -> convert(source, targetClass);
+    public <TS, TD> Function<TS, TD> convertTo(Class<? extends TD> targetClass, Object... args) {
+        return source -> convert(source, targetClass, args);
     }
 
     @Override
-    public <TS, TD> Function<TS, TD> convertTo(ConversionKey conversionKey) {
-        return source -> convert(source, conversionKey);
+    public <TS, TD> Function<TS, TD> convertTo(ConversionKey conversionKey, Object... args) {
+        return source -> convert(source, conversionKey, args);
     }
 }

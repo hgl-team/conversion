@@ -1,5 +1,7 @@
 package org.hglteam.conversion.api;
 
+import org.hglteam.conversion.api.context.TypeConversionContext;
+
 public interface TypeConverter<TS, TD> {
-    TD convert(TS source);
+    TD convert(TypeConversionContext context, TS source);
 }
