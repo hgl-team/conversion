@@ -1,6 +1,5 @@
 package org.hglteam.conversion.api.context;
 
-import lombok.Getter;
 import org.hglteam.conversion.api.ConversionKey;
 import org.hglteam.conversion.api.Converter;
 import org.hglteam.conversion.api.DefaultConvertionKey;
@@ -9,56 +8,54 @@ import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.Optional;
 
-@Getter
-public class ContextConversionBuilder<TD> {
+public class ContextualConversionBuilder<TD> {
     private Converter converter;
     private Type targetType;
-
     private Type sourceType;
     private ConversionKey conversionKey;
     private Object[] args;
 
-    public ContextConversionBuilder(Converter converter, Type targetType) {
+    public ContextualConversionBuilder(Converter converter, Type targetType) {
         this.converter = converter;
         this.targetType = targetType;
     }
 
-    public ContextConversionBuilder<TD> withConvertionKey(ConversionKey conversionKey) {
+    public ContextualConversionBuilder(Converter converter, Class<? extends TD> targetClass) {
+        this(converter, (Type) targetClass);
+    }
+
+    public ContextualConversionBuilder<TD> withConvertionKey(ConversionKey conversionKey) {
         this.conversionKey = conversionKey;
         return this;
     }
 
-    public ContextConversionBuilder<TD> withSourceType(Type sourceType) {
+    public ContextualConversionBuilder<TD> withSourceType(Type sourceType) {
         this.sourceType = sourceType;
         return this;
     }
 
-    public ContextConversionBuilder<TD> withTargetType(Type targetType) {
+    public ContextualConversionBuilder<TD> withTargetType(Type targetType) {
         this.targetType = targetType;
         return this;
     }
 
-    public ContextConversionBuilder<TD> withArgs(Object... args) {
+    public ContextualConversionBuilder<TD> withArgs(Object... args) {
         this.args = args;
         return this;
     }
 
     public <TS> TD convert(TS source) {
-        sourceType = Optional.ofNullable(sourceType)
-                .orElse(source.getClass());
-
-        Objects.requireNonNull(targetType);
-
-        conversionKey = Optional.ofNullable(conversionKey)
+        var conversionKey = Optional.ofNullable(this.conversionKey)
                 .orElseGet(() -> DefaultConvertionKey.builder()
-                        .source(sourceType)
+                        .source(Objects.nonNull(sourceType) ? sourceType : source.getClass())
                         .target(targetType)
                         .build());
-
-        return converter.convert(source, TypeConversionContext.builder()
+        var context = TypeConversionContext.builder()
                 .converter(converter)
                 .currentConversionKey(conversionKey)
                 .arguments(args)
-                .build());
+                .build();
+
+        return converter.convert(source, context);
     }
 }
