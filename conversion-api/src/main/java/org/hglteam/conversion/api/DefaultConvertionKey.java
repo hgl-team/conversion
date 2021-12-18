@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Getter
 @NoArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public class DefaultConvertionKey implements ConversionKey {
     private Type source;
     private Type target;

@@ -3,6 +3,7 @@ package org.hglteam.conversion;
 import org.hglteam.conversion.api.GenericConversionKey;
 import org.hglteam.conversion.api.TypeConverter;
 import org.hglteam.conversion.api.context.TypeConversionContext;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -102,5 +103,4 @@ class GenericConverterTest {
             return source.number.longValue();
         }
     }
-
 }
