@@ -9,7 +9,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TypeDescriptorTest {
-
     private TypeDescriptor<?> descriptor;
     private Type typeReturned;
 
@@ -20,6 +19,16 @@ class TypeDescriptorTest {
         thenParameterizedTypeIsReturned();
     }
 
+    @Test
+    void should_return_null_when_getDescriptor() {
+        givenAGenericTypeDescriptor();
+        assertNull(this.descriptor.descriptor());
+    }
+
+    @Test
+    void should_throwException_when_descriptorIsASuperclass() {
+        assertThrows(IllegalArgumentException.class, SecondTypeDescriptorSubclass::new);
+    }
     private void givenAGenericTypeDescriptor() {
         this.descriptor = new TypeDescriptor<List<String>>(){ };
     }
@@ -30,5 +39,12 @@ class TypeDescriptorTest {
 
     private void thenParameterizedTypeIsReturned() {
         assertTrue(this.typeReturned instanceof ParameterizedType);
+    }
+
+    private static class SecondTypeDescriptorSubclass extends TypeDescriptorSubclass {
+
+    }
+    private static class TypeDescriptorSubclass extends TypeDescriptor<Integer> {
+
     }
 }

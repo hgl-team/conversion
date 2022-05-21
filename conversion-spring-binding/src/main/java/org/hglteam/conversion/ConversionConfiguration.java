@@ -1,36 +1,38 @@
 package org.hglteam.conversion;
 
-import org.hglteam.conversion.api.ConversionContext;
+import org.hglteam.conversion.api.ConversionMap;
 import org.hglteam.conversion.api.Converter;
-import org.hglteam.conversion.api.DateFormatter;
-import org.hglteam.conversion.api.DateFormattingContext;
+import org.hglteam.conversion.api.datetime.DateFormatter;
+import org.hglteam.conversion.api.datetime.DateFormatMap;
+import org.hglteam.conversion.datetime.DefaultDateFormatMap;
+import org.hglteam.conversion.datetime.DefaultDateFormatter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ConversionConfiguration {
     @Bean
-    public ConversionContext conversionContext() {
-        return new ConversionTableContext();
+    public ConversionMap conversionMap() {
+        return new DefaultConversionMap();
     }
 
     @Bean
-    public DateFormattingContext dateFormatterContext() {
-        return new GenericDateFormattingContext();
+    public DateFormatMap dateFormatMap() {
+        return new DefaultDateFormatMap();
     }
 
     @Bean
-    public Converter converter(ConversionContext conversionContext) {
-        return new GenericConverter(conversionContext);
+    public Converter converter(ConversionMap conversionMap) {
+        return new DefaultConverter(conversionMap);
     }
 
     @Bean
-    public DateFormatter dateFormatter(DateFormattingContext dateFormattingContext) {
-        return new GenericDateFormatter(dateFormattingContext);
+    public DateFormatter dateFormatter(DateFormatMap dateFormatMap) {
+        return new DefaultDateFormatter(dateFormatMap);
     }
 
     @Bean
-    public SpringBindingConverter springBindingConverter(ConversionContext conversionContext, Converter converter) {
-        return new SpringBindingConverter(conversionContext, converter);
+    public SpringBindingConverter springBindingConverter(ConversionMap conversionMap, Converter converter) {
+        return new SpringBindingConverter(conversionMap, converter);
     }
 }

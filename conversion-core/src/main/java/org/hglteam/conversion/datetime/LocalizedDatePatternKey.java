@@ -1,4 +1,4 @@
-package org.hglteam.conversion;
+package org.hglteam.conversion.datetime;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

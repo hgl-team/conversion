@@ -1,13 +1,13 @@
-package org.hglteam.conversion.api;
+package org.hglteam.conversion.api.datetime;
 
 import java.text.DateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public interface DateFormattingContext {
+public interface DateFormatMap {
 
-    DateFormattingContext registerLegacy(String format, Locale locale);
-    DateFormattingContext register(String format, Locale locale);
+    DateFormatMap registerLegacy(String format, Locale locale);
+    DateFormatMap register(String format, Locale locale);
 
     DateFormat resolveLegacyFormatter(String pattern, Locale locale);
     DateTimeFormatter resolveFormatter(String pattern, Locale locale);

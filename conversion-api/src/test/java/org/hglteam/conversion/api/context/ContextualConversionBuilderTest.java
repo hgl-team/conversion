@@ -1,7 +1,7 @@
-package org.hglteam.conversion.api;
+package org.hglteam.conversion.api.context;
 
-import org.hglteam.conversion.api.context.ContextualConversionBuilder;
-import org.hglteam.conversion.api.context.TypeConversionContext;
+import org.hglteam.conversion.api.Converter;
+import org.hglteam.conversion.api.DefaultConversionKey;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,18 +11,20 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigInteger;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-public class ContextualConversionBuilderTest {
+class ContextualConversionBuilderTest {
 
     @Mock
     private Converter converter;
     private ContextualConversionBuilder<?> conversionBuilder;
-    private TypeConversionContext context;
+    private ConversionContext context;
     private Integer source;
     private Object result;
+    private DefaultConversionKey expectedConversionKey;
 
     @BeforeEach
     public void setupTest() {
@@ -30,7 +32,7 @@ public class ContextualConversionBuilderTest {
     }
 
     @Test
-    public void sourceTypeResolvedFromConversionSource() {
+    void sourceTypeResolvedFromConversionSource() {
         givenAConversionToLookIntoConversionContext();
         givenAnIntegerObjectSource();
         whenTheSourceGetsConverted();
@@ -38,7 +40,7 @@ public class ContextualConversionBuilderTest {
     }
 
     @Test
-    public void withCustomSourceType() {
+    void withCustomSourceType() {
         givenAConversionToLookIntoConversionContext();
         givenAnIntegerObjectSource();
         givenACustomSourceType();
@@ -47,7 +49,7 @@ public class ContextualConversionBuilderTest {
     }
 
     @Test
-    public void withCustomTargetType() {
+    void withCustomTargetType() {
         givenAConversionToLookIntoConversionContext();
         givenAnIntegerObjectSource();
         givenACustomTargetType();
@@ -56,7 +58,7 @@ public class ContextualConversionBuilderTest {
     }
 
     @Test
-    public void withArguments() {
+    void withArguments() {
         givenAConversionToLookIntoConversionContext();
         givenAnIntegerObjectSource();
         givenSomeArguments();
@@ -64,17 +66,39 @@ public class ContextualConversionBuilderTest {
         thenContextHasExpectedArguments();
     }
 
+    @Test
+    void withConvertionKey() {
+        givenAConversionToLookIntoConversionContext();
+        givenAnIntegerObjectSource();
+        givenACustomConvertionKey();
+        whenTheSourceGetsConverted();
+        thenContextHasExpectedKey();
+    }
+
+    private void givenACustomConvertionKey() {
+        this.expectedConversionKey = DefaultConversionKey.builder().build();
+        this.conversionBuilder.withConvertionKey(this.expectedConversionKey);
+    }
+
+    private void thenContextHasExpectedKey() {
+        assertEquals(this.expectedConversionKey, this.context.getCurrentConversionKey());
+    }
+
     private void thenContextHasExpectedArguments() {
         assertNotNull(this.context.getArguments());
-        assertEquals(4, this.context.getArguments().length);
-        assertEquals(1, this.context.getArguments()[0]);
-        assertEquals('C', this.context.getArguments()[1]);
-        assertEquals(23.4, this.context.getArguments()[2]);
-        assertEquals("23.4", this.context.getArguments()[3]);
+        assertEquals(4, this.context.getArguments().size());
+        assertEquals(1, this.context.getArguments().get("number"));
+        assertEquals('C', this.context.getArguments().get("character"));
+        assertEquals(23.4, this.context.getArguments().get(Double.class));
+        assertEquals("23.4", this.context.getArguments().get(234));
     }
 
     private void givenSomeArguments() {
-        this.conversionBuilder.withArgs(1, 'C', 23.4, "23.4");
+        this.conversionBuilder.withArgs(Map.ofEntries(
+                        Map.entry("number", 1),
+                        Map.entry("character", 'C')))
+                .withArg(Double.class, 23.4)
+                .withArg(234, "23.4");
     }
 
     private void givenACustomTargetType() {
@@ -108,7 +132,7 @@ public class ContextualConversionBuilderTest {
     private void givenAConversionToLookIntoConversionContext() {
         Mockito.doAnswer(this::extractConversionContext)
                 .when(converter)
-                .convert(Mockito.any(), Mockito.any(TypeConversionContext.class));
+                .convert(Mockito.any(), Mockito.any(ConversionContext.class));
     }
 
     private Object extractConversionContext(InvocationOnMock invocationOnMock) {

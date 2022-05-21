@@ -2,18 +2,21 @@ package org.hglteam.conversion;
 
 import org.hglteam.conversion.api.GenericTypeConverter;
 import org.hglteam.conversion.api.TypeConverter;
-import org.hglteam.conversion.api.context.TypeConversionContext;
+import org.hglteam.conversion.api.context.ConversionContext;
+import org.hglteam.conversion.stub.Generic;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ConverterKeyResolverTest {
+class ConverterKeyResolverTest {
 
     @Nested
-    public class GetConverterKey {
+    class GetConverterKey {
         private TypeConverter<?, ?> converter;
         private org.hglteam.conversion.api.ConversionKey converterKey;
 
@@ -22,6 +25,12 @@ public class ConverterKeyResolverTest {
             givenAGenericSourceConverter();
             whenGetConverterKey();
             thenKeyDescriptionIsExpected();
+
+            var previousKey = this.converterKey;
+
+            whenGetConverterKey();
+
+            assertEquals(previousKey, this.converterKey);
         }
 
         @Test
@@ -40,7 +49,7 @@ public class ConverterKeyResolverTest {
         }
 
         private void whenGetConverterKey() {
-            this.converterKey = ConversionKeyResolver.getConverterKey(this.converter);
+            this.converterKey = ConversionKeyResolver.inferConversionKey(this.converter);
         }
 
         private void thenKeyDescriptionIsExpected() {
@@ -50,11 +59,12 @@ public class ConverterKeyResolverTest {
         }
     }
 
-    public static class GenericSourceConverter implements TypeConverter<Generic<?>, Long>
-    {
+    public static class GenericSourceConverter extends BaseGenericConverter<Generic<BigInteger>, Long> {
         @Override
-        public Long convert(TypeConversionContext context, Generic<?> source) {
+        public Long convert(ConversionContext context, Generic<BigInteger> source) {
             return source.number.longValue();
         }
     }
+
+    public static abstract class BaseGenericConverter<S, T extends Number> implements TypeConverter<S, T> { }
 }

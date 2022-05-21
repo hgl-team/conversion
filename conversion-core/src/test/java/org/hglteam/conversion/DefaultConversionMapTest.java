@@ -1,26 +1,28 @@
-package org.hglteam.conversion.util;
+package org.hglteam.conversion;
 
 import org.hglteam.conversion.api.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ConversionTableTest {
+class DefaultConversionMapTest {
 
-    private ConversionTable conversionTable;
+    private ConversionMap conversionTable;
 
     @BeforeEach
     void setup() {
-        this.conversionTable = new ConversionTable();
+        this.conversionTable = new DefaultConversionMap();
     }
 
     @Nested
-    public class PutConverterTest {
+    class RegisterTest {
         private ConversionKey key;
         private TypeConverter<?, ?> converter;
 
@@ -37,27 +39,26 @@ class ConversionTableTest {
             givenARegisteredConverter();
             givenADuplicatedConversionKey();
             givenADuplicatedConverter();
-            assertThrows(ConversionTable.DuplicatedConversionKeyException.class,
+            assertThrows(ConversionMap.DuplicatedConversionKeyException.class,
                     this::whenPutANewConverterIntoTable);
         }
 
         private void givenARegisteredConverter() {
-            conversionTable.put(Double.class, Integer.class, new GenericTypeConverter<>(Double::intValue) { });
+            conversionTable.register(new GenericTypeConverter<>(Double::intValue) { });
         }
 
         private void givenADuplicatedConversionKey() {
-            key = DefaultConvertionKey.builder()
+            key = DefaultConversionKey.builder()
                     .source(Double.class)
                     .target(Integer.class)
                     .build();
         }
-
         private void givenADuplicatedConverter() {
             this.converter = new GenericTypeConverter<>(Double::intValue) { };
         }
 
         private void givenAWellDefinedConversionKey() {
-            key = DefaultConvertionKey.builder()
+            key = DefaultConversionKey.builder()
                     .source(Double.class)
                     .target(Integer.class)
                     .build();
@@ -68,20 +69,24 @@ class ConversionTableTest {
         }
 
         private void whenPutANewConverterIntoTable() {
-            conversionTable.put(key.getSource(), key.getTarget(), converter);
+            conversionTable.register(
+                    DefaultConversionKey.builder()
+                            .source(key.getSource())
+                            .target(key.getTarget())
+                            .build(), converter);
         }
 
         private void thenANewConversionIsRegistered() {
-            assertFalse(conversionTable.getAvailableConversion().isEmpty());
-            assertTrue(conversionTable.getAvailableConversion().contains(key));
-            assertEquals(converter, conversionTable.getCompatibleConverter(key));
+            assertFalse(conversionTable.getAvailableConversions().isEmpty());
+            assertTrue(conversionTable.getAvailableConversions().contains(key));
+            assertEquals(converter, conversionTable.resolve(key));
         }
     }
 
     @Nested
-    public class GetCompatibleConverter {
+    class ResolveTest {
         private ExplicitTypeConverter<?, ?> expectedConverter;
-        private DefaultConvertionKey key;
+        private DefaultConversionKey key;
         private TypeConverter<?, ?> returnedConverter;
 
         @Test
@@ -98,6 +103,10 @@ class ConversionTableTest {
             givenACompatibleConversionKey();
             whenGetCompatibleConverter();
             thenConverterIsTheExpected();
+            var previousConverter = returnedConverter;
+            whenGetCompatibleConverter();
+            thenConverterIsTheExpected();
+            assertEquals(previousConverter, returnedConverter);
         }
 
         @Test
@@ -112,25 +121,43 @@ class ConversionTableTest {
         void noConverterFound() {
             givenAWellDefinedConverter();
             givenANonDefinedConversionKey();
-            assertThrows(ConversionTable.NoCompatibleKeyFoundException.class, this::whenGetCompatibleConverter);
+            assertThrows(ConversionMap.NoCompatibleKeyFoundException.class, this::whenGetCompatibleConverter);
         }
 
         @Test
         void noConverterFoundForType() {
             givenAWellDefinedConverter();
             givenANonDefinedConversionKeyWithDefinedTarget();
-            assertThrows(ConversionTable.NoCompatibleKeyFoundException.class, this::whenGetCompatibleConverter);
+            assertThrows(ConversionMap.NoCompatibleKeyFoundException.class, this::whenGetCompatibleConverter);
+            givenANonDefinedConversionKeyWithDefinedSource();
+            assertThrows(ConversionMap.NoCompatibleKeyFoundException.class, this::whenGetCompatibleConverter);
+            givenANonDefinedConversionKeyWithNoMatchingTypes();
+            assertThrows(ConversionMap.NoCompatibleKeyFoundException.class, this::whenGetCompatibleConverter);
+        }
+
+        private void givenANonDefinedConversionKeyWithNoMatchingTypes() {
+            this.key = DefaultConversionKey.builder()
+                    .source(Double.class)
+                    .target(Integer.class)
+                    .build();
+        }
+
+        private void givenANonDefinedConversionKeyWithDefinedSource() {
+            this.key = DefaultConversionKey.builder()
+                    .source(new TypeDescriptor<AtomicReference<String>>(){}.getType())
+                    .target(Integer.class)
+                    .build();
         }
 
         private void givenANonDefinedConversionKeyWithDefinedTarget() {
-            this.key = DefaultConvertionKey.builder()
+            this.key = DefaultConversionKey.builder()
                     .source(Map.Entry.class)
                     .target(String.class)
                     .build();
         }
 
         private void givenANonDefinedConversionKey() {
-            this.key = DefaultConvertionKey.builder()
+            this.key = DefaultConversionKey.builder()
                     .source(String.class)
                     .target(Double.class)
                     .build();
@@ -138,13 +165,12 @@ class ConversionTableTest {
 
         private void givenAWellDefinedGenericConverter() {
             this.expectedConverter = new GenericTypeConverter<AtomicReference<String>, String>(AtomicReference::toString) {};
-            conversionTable.put(this.expectedConverter.getConversionKey().getSource()
-                    , this.expectedConverter.getConversionKey().getTarget()
+            conversionTable.register(this.expectedConverter.getConversionKey()
                     , this.expectedConverter);
         }
 
         private void givenACompatibleGenericConversionKey() {
-            this.key = DefaultConvertionKey.builder()
+            this.key = DefaultConversionKey.builder()
                     .source(new TypeDescriptor<AtomicReference<String>>(){}.getType())
                     .target(String.class)
                     .build();
@@ -155,7 +181,7 @@ class ConversionTableTest {
         }
 
         private void givenACompatibleConversionKey() {
-            this.key = DefaultConvertionKey.builder()
+            this.key = DefaultConversionKey.builder()
                     .source(Integer.class)
                     .target(String.class)
                     .build();
@@ -163,25 +189,46 @@ class ConversionTableTest {
 
         private void givenAWellDefinedConverter() {
             this.expectedConverter = new GenericTypeConverter<>(Number::toString){};
-            conversionTable.put(this.expectedConverter.getConversionKey().getSource()
-                    , this.expectedConverter.getConversionKey().getTarget()
+            conversionTable.register(this.expectedConverter.getConversionKey()
                     , this.expectedConverter);
         }
 
         private void givenAMatchingConversionKey() {
-            this.key = DefaultConvertionKey.builder()
+            this.key = DefaultConversionKey.builder()
                     .source(Number.class)
                     .target(String.class)
                     .build();
         }
 
         private void whenGetCompatibleConverter() {
-            this.returnedConverter = conversionTable.getCompatibleConverter(this.key);
+            this.returnedConverter = conversionTable.resolve(this.key);
         }
 
         private void thenConverterIsTheExpected() {
             assertEquals(this.expectedConverter, this.returnedConverter);
         }
 
+    }
+
+    @Nested
+    class GetAvailableConversions {
+        @Test
+        void should_returnExpectedConversionKeys_when_getAvailableConversion() {
+            var expectedConversions = Arrays
+                    .<ExplicitTypeConverter<?, ?>>asList(
+                    new GenericTypeConverter<Double, String>(Object::toString) {},
+                    new GenericTypeConverter<Integer, String>(Object::toString) {},
+                    new GenericTypeConverter<Float, String>(Object::toString) {},
+                    new GenericTypeConverter<Long, String>(Object::toString) {});
+
+            expectedConversions.forEach(conversionTable::register);
+
+            var availableConversions = conversionTable.getAvailableConversions();
+
+            assertEquals(expectedConversions.size(), availableConversions.size());
+            assertTrue(availableConversions.containsAll(expectedConversions.stream()
+                    .map(ExplicitTypeConverter::getConversionKey)
+                    .collect(Collectors.toList())));
+        }
     }
 }
