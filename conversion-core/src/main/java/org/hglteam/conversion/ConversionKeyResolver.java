@@ -1,101 +1,99 @@
 package org.hglteam.conversion;
 
 import org.hglteam.conversion.api.ConversionKey;
-import org.hglteam.conversion.api.DefaultConvertionKey;
+import org.hglteam.conversion.api.DefaultConversionKey;
 import org.hglteam.conversion.api.ExplicitTypeConverter;
 import org.hglteam.conversion.api.TypeConverter;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-public class ConversionKeyResolver {
+public final class ConversionKeyResolver {
+    private ConversionKeyResolver() { }
 
-    public static ConversionKey getConverterKey(TypeConverter<?,?> obj) {
-        if(obj instanceof ExplicitTypeConverter) {
-            return ((ExplicitTypeConverter<?, ?>) obj).getConversionKey();
+    private static final Map<Type, ConversionKey> previousMatches = new HashMap<>();
+
+    public static ConversionKey inferConversionKey(TypeConverter<?, ?> converter) {
+        if(converter instanceof ExplicitTypeConverter) {
+            return ((ExplicitTypeConverter<?, ?>) converter).getConversionKey();
         } else {
-            Type[] genericTypes = getGenericConverterTypes(obj);
+            var converterType = converter.getClass();
 
-            return Optional.of(genericTypes)
-                    .filter(converterGenericTypes -> converterGenericTypes.length == 2)
-                    .map(converterGenericTypes -> DefaultConvertionKey.builder()
-                            .source(converterGenericTypes[0])
-                            .target(converterGenericTypes[1])
-                            .build())
-                    .orElseThrow(() -> InvalidConvertionTypeException.fromPartialResult(genericTypes));
-        }
-    }
-
-    public static ConversionKey getConverterKey(Type source, Type target) {
-        return DefaultConvertionKey.builder()
-                .source(source)
-                .target(target)
-                .build();
-    }
-
-    private static Type[] getGenericConverterTypes(Object instance) {
-        Map<Type, Type> argumentMap = new HashMap<>();
-        Class<?> currentSuperClass = instance.getClass();
-        ParameterizedType converterInterfaceType = null;
-
-        while (currentSuperClass != null && converterInterfaceType == null) {
-            getGenericTypeArguments(argumentMap, currentSuperClass);
-            converterInterfaceType = getConverterInterface(currentSuperClass);
-            currentSuperClass = Optional.of(currentSuperClass).map(Class::getSuperclass).orElseThrow(IllegalArgumentException::new);
-        }
-
-        if(Objects.isNull(converterInterfaceType)) {
-            throw InvalidConvertionTypeException.fromInstance(instance);
-        }
-
-        return Arrays.stream(converterInterfaceType.getActualTypeArguments())
-                .map(type -> Optional.of(type).filter(argumentMap::containsKey).map(argumentMap::get).orElse(type))
-                .toArray(Type[]::new);
-    }
-
-    private static ParameterizedType getConverterInterface(Class<?> superclass) {
-        return Arrays.stream(superclass.getGenericInterfaces())
-                .filter(ParameterizedType.class::isInstance)
-                .map(ParameterizedType.class::cast)
-                .filter(ptype -> TypeConverter.class.isAssignableFrom((Class<?>)ptype.getRawType()))
-                .findAny()
-                .orElse(null);
-    }
-
-    private static void getGenericTypeArguments(Map<Type, Type> argumentType, Class<?> instanceClass) {
-        Type superclass = instanceClass.getGenericSuperclass();
-
-        if(superclass instanceof ParameterizedType) {
-            ParameterizedType parametricSuperclass = (ParameterizedType)superclass;
-            Type[] genericTypeParameters = ((Class<?>) parametricSuperclass.getRawType()).getTypeParameters();
-            Type[] genericTypeArguments = parametricSuperclass.getActualTypeArguments();
-
-            for (int i = 0; i < genericTypeParameters.length; i++) {
-                argumentType.put(genericTypeParameters[i], Optional.of(genericTypeArguments[i])
-                        .filter(argumentType::containsKey)
-                        .map(argumentType::get)
-                        .orElse(genericTypeArguments[i]));
+            if (!previousMatches.containsKey(converterType)) {
+                previousMatches.put(converterType, inferConversionKey(converterType, new HashMap<>()));
             }
+
+            return previousMatches.get(converterType);
         }
     }
 
-    private static class InvalidConvertionTypeException extends IllegalArgumentException {
-        private static final String PARTIAL_RESULT_MESSAGE_FORMAT = "Partial types found: %s";
-        private static final String INVALID_INSTANCE_MESSAGE_FORMAT = "Illegal instance type %s";
+    private static ConversionKey inferConversionKey(Type source, Map<Type, Type> genericArgs) {
+        if(source instanceof Class<?>) {
+            return inferConversionKey((Class<?>) source, genericArgs);
+        } else if(source instanceof ParameterizedType) {
+            return inferConversionKey((ParameterizedType)source, genericArgs);
+        } else {
+            return null;
+        }
+    }
 
-        public InvalidConvertionTypeException(String message) {
-            super(message);
+    private static ConversionKey inferConversionKey(Class<?> source, Map<Type, Type> genericArgs) {
+        var resolvedTypeParams = Arrays.stream(source.getTypeParameters())
+                .sequential()
+                .map(typeParam -> lookForLastValue(typeParam, genericArgs))
+                .collect(Collectors.toList());
+
+        if (Objects.equals(source, TypeConverter.class)) {
+            return DefaultConversionKey.builder()
+                    .source(resolvedTypeParams.get(0))
+                    .target(resolvedTypeParams.get(1))
+                    .build();
+        } else {
+            var baseClass = source.getGenericSuperclass();
+
+            Optional.of(baseClass)
+                    .filter(ParameterizedType.class::isInstance)
+                    .map(ParameterizedType.class::cast)
+                    .ifPresent(parameterizedType -> scanTypeParameters(parameterizedType, genericArgs));
+
+            var interfaces = source.getGenericInterfaces();
+
+            return Arrays.stream(interfaces)
+                    .map(type -> inferConversionKey(type, genericArgs))
+                    .filter(Objects::nonNull)
+                    .findAny()
+                    .orElseGet(() -> inferConversionKey(baseClass, genericArgs));
+        }
+    }
+
+    private static ConversionKey inferConversionKey(ParameterizedType source, Map<Type, Type> genericArgs) {
+        scanTypeParameters(source, genericArgs);
+
+        return inferConversionKey(source.getRawType(), genericArgs);
+    }
+
+    private static void scanTypeParameters(ParameterizedType parameterizedType, Map<Type, Type> genericArgs) {
+        var actualParameters = parameterizedType.getActualTypeArguments();
+        var rawType = (Class<?>) parameterizedType.getRawType();
+        var rawTypeArgs = rawType.getTypeParameters();
+
+        IntStream.range(0, actualParameters.length)
+                .mapToObj(i -> Map.entry(rawTypeArgs[i], actualParameters[i]))
+                .forEach(pair -> genericArgs.put(pair.getKey(), pair.getValue()));
+    }
+
+    private static  Type lookForLastValue(Type type, Map<Type, Type> genericArgs) {
+        var current = type;
+
+        while(genericArgs.containsKey(current)) {
+            current = genericArgs.get(current);
         }
 
-        public static InvalidConvertionTypeException fromPartialResult(Type[] partialResults) {
-            return new InvalidConvertionTypeException(String.format(PARTIAL_RESULT_MESSAGE_FORMAT,
-                    Arrays.toString(partialResults)));
-        }
+        genericArgs.replace(type, current);
 
-        public static InvalidConvertionTypeException fromInstance(Object instance) {
-            return new InvalidConvertionTypeException(String.format(INVALID_INSTANCE_MESSAGE_FORMAT,
-                    instance.getClass()));
-        }
+        return current;
     }
 }

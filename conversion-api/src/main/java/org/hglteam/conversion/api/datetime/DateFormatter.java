@@ -1,4 +1,4 @@
-package org.hglteam.conversion.api;
+package org.hglteam.conversion.api.datetime;
 
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
@@ -14,8 +14,8 @@ public interface DateFormatter {
     String format(TemporalAccessor temporal, String pattern);
     Function<Date, String> format(String pattern, Locale locale);
     Function<Date, String> format(String pattern);
-    Function<? extends TemporalAccessor, String> formatTemporal(String pattern, Locale locale);
-    Function<? extends TemporalAccessor, String> formatTemporal(String pattern);
+    <T extends TemporalAccessor> Function<T, String> formatTemporal(String pattern, Locale locale);
+    <T extends TemporalAccessor> Function<T, String> formatTemporal(String pattern);
 
     Date toDate(String value, String pattern, Locale locale);
     Date toDate(String value, String pattern);
@@ -25,9 +25,9 @@ public interface DateFormatter {
     <T extends TemporalAccessor> Function<String, T> toTemporal(BiFunction<String, DateTimeFormatter, T> parser, String pattern);
 
     class DateFormattingException extends RuntimeException {
-        private String pattern;
-        private String value;
-        private Locale locale;
+        private final String pattern;
+        private final String value;
+        private final Locale locale;
 
         public DateFormattingException(String value, String pattern, Locale locale) {
             this.pattern = pattern;
