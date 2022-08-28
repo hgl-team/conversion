@@ -17,11 +17,11 @@ class TypeMatcherTest {
         assertTrue(TypeMatcher.isAssignableFrom(type, new TypeDescriptor<List<Number>>(){}.getType()));
         assertTrue(TypeMatcher.isAssignableFrom(type, new TypeDescriptor<AbstractCollection<Number>>(){}.getType()));
         assertTrue(TypeMatcher.isAssignableFrom(type, new TypeDescriptor<Iterable<Object>>(){}.getType()));
+        assertTrue(TypeMatcher.isAssignableFrom(type, new TypeDescriptor<List<? extends Number>>(){}.getType()));
 
         assertFalse(TypeMatcher.isAssignableFrom(type, String.class));
         assertFalse(TypeMatcher.isAssignableFrom(type, new TypeDescriptor<Set<Number>>(){}.getType()));
         assertFalse(TypeMatcher.isAssignableFrom(type, new TypeDescriptor<List<Integer>>(){}.getType()));
-        assertFalse(TypeMatcher.isAssignableFrom(type, new TypeDescriptor<List<? extends Number>>(){}.getType()));
     }
 
     @Test
@@ -32,11 +32,11 @@ class TypeMatcherTest {
         assertTrue(TypeMatcher.isAssignableFrom(type, new TypeDescriptor<List<Number>>(){}.getType()));
         assertTrue(TypeMatcher.isAssignableFrom(type, new TypeDescriptor<AbstractCollection<Number>>(){}.getType()));
         assertTrue(TypeMatcher.isAssignableFrom(type, new TypeDescriptor<Iterable<Object>>(){}.getType()));
+        assertTrue(TypeMatcher.isAssignableFrom(type, new TypeDescriptor<List<? extends Number>>(){}.getType()));
 
         assertFalse(TypeMatcher.isAssignableFrom(type, String.class));
         assertFalse(TypeMatcher.isAssignableFrom(type, new TypeDescriptor<Set<Number>>(){}.getType()));
         assertFalse(TypeMatcher.isAssignableFrom(type, new TypeDescriptor<List<Double>>(){}.getType()));
-        assertFalse(TypeMatcher.isAssignableFrom(type, new TypeDescriptor<List<? extends Number>>(){}.getType()));
         assertFalse(TypeMatcher.isAssignableFrom(type, new TypeDescriptor<Map<Number, String>>(){}.getType()));
     }
 
