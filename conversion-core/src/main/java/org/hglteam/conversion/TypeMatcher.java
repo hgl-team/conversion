@@ -5,6 +5,7 @@ import org.hglteam.conversion.api.DefaultConversionKey;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -41,6 +42,11 @@ public final class TypeMatcher {
     private static boolean isAssignableFrom(Class<?> source, Type target, Map<Type, Type> genericArgs) {
         if(target instanceof Class<?> && ((Class<?>)target).isAssignableFrom(source)) {
             return true;
+        } else if(target instanceof WildcardType) {
+            var wildcard = (WildcardType) target;
+
+            return Arrays.stream(wildcard.getUpperBounds())
+                    .allMatch(bound -> isAssignableFrom(source, bound));
         } else if(target instanceof ParameterizedType){
             var parameterizedTarget = (ParameterizedType) target;
             var resolvedTypeParams = Arrays.stream(source.getTypeParameters())
