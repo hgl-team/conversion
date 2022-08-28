@@ -3,7 +3,7 @@
     <parent>
         <artifactId>conversion</artifactId>
         <groupId>org.hglteam</groupId>
-        <version>3.0.1</version>
+        <version>3.0.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>conversion-core</artifactId>
@@ -13,7 +13,7 @@
         <dependency>
             <groupId>org.hglteam</groupId>
             <artifactId>conversion-api</artifactId>
-            <version>3.0.1</version>
+            <version>3.0.2-SNAPSHOT</version>
         </dependency>
 
         <dependency>
