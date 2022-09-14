@@ -82,4 +82,9 @@ public class DefaultConverter implements Converter {
     public <T> ContextualConversionBuilder<T> withContext(Class<? extends T> targetClass) {
         return new ContextualConversionBuilder<>(this, targetClass);
     }
+
+    @Override
+    public <T> ContextualConversionBuilder<T> withContext(TypeDescriptor<T> targetTypeDescriptor) {
+        return new ContextualConversionBuilder<>(this, targetTypeDescriptor.getType());
+    }
 }
