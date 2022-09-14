@@ -103,7 +103,9 @@ class DefaultConversionMapTest {
             givenACompatibleConversionKey();
             whenGetCompatibleConverter();
             thenConverterIsTheExpected();
+
             var previousConverter = returnedConverter;
+
             whenGetCompatibleConverter();
             thenConverterIsTheExpected();
             assertEquals(previousConverter, returnedConverter);
@@ -112,6 +114,14 @@ class DefaultConversionMapTest {
         @Test
         void getMatchingGenericTypeConverter() {
             givenAWellDefinedGenericConverter();
+            givenACompatibleGenericConversionKey();
+            whenGetCompatibleConverter();
+            thenGenericReturnedConverterIsExpected();
+        }
+
+        @Test
+        void getCompatibleGenericTypeConverter() {
+            givenAWilcardGenericConverter();
             givenACompatibleGenericConversionKey();
             whenGetCompatibleConverter();
             thenGenericReturnedConverterIsExpected();
@@ -133,6 +143,12 @@ class DefaultConversionMapTest {
             assertThrows(ConversionMap.NoCompatibleKeyFoundException.class, this::whenGetCompatibleConverter);
             givenANonDefinedConversionKeyWithNoMatchingTypes();
             assertThrows(ConversionMap.NoCompatibleKeyFoundException.class, this::whenGetCompatibleConverter);
+        }
+
+        private void givenAWilcardGenericConverter() {
+            this.expectedConverter = new GenericTypeConverter<AtomicReference<? extends CharSequence>, String>(AtomicReference::toString){};
+            conversionTable.register(this.expectedConverter.getConversionKey()
+                    , this.expectedConverter);
         }
 
         private void givenANonDefinedConversionKeyWithNoMatchingTypes() {
