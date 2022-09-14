@@ -22,4 +22,5 @@ public interface Converter {
 
     <T> ContextualConversionBuilder<T> withContext(Type targetType);
     <T> ContextualConversionBuilder<T> withContext(Class<? extends T> targetClass);
+    <T> ContextualConversionBuilder<T> withContext(TypeDescriptor<T> targetTypeDescriptor);
 }

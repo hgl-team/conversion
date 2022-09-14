@@ -187,6 +187,22 @@ class DefaultConverterTest {
             thenResultIsExpected();
         }
 
+        @Test
+        void given_conversionContextAndTypeDescriptor_when_convertToByType_then_convertUsingContext() {
+            givenAConvertionContext();
+            givenALocalDateTimeToStringConverter();
+            givenAConverterUsingTheConvertionContext();
+            givenALocalDateTimeToConvert();
+            whenConvertLocalDateTimeToStringUsingConvertToByTypeDescriptor();
+            thenResultIsExpected();
+        }
+
+        private void whenConvertLocalDateTimeToStringUsingConvertToByTypeDescriptor() {
+            this.result = converter.withContext(new TypeDescriptor<String>(){})
+                    .withArg("format", EXPECTED_DATE_TIME_FORMATTER)
+                    .convert(this.localDateTime);
+        }
+
         private void whenConvertLocalDateTimeToStringUsingConvertToByType() {
             Type type = String.class;
 
