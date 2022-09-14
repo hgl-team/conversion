@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.hglteam</groupId>
     <artifactId>conversion</artifactId>
-    <version>3.0.2</version>
+    <version>3.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>conversion</name>
     <description>Small set of classes to convert POJOs</description>
@@ -246,7 +246,7 @@
         <connection>${scm-connection}</connection>
         <url>${scm-url}</url>
         <developerConnection>${scm-developerConnection}</developerConnection>
-        <tag>v3.0.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <modules>
