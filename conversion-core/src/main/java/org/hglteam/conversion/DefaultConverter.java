@@ -39,8 +39,18 @@ public class DefaultConverter implements Converter {
     }
 
     @Override
+    public <S, T> T convert(S source, TypeDescriptor<? extends S> sourceType, TypeDescriptor<T> targetType) {
+        return convert(source, sourceType.getType(), targetType.getType());
+    }
+
+    @Override
     public <S, T> T convert(S source, Type targetType) {
         return convert(source, source.getClass(), targetType);
+    }
+
+    @Override
+    public <S, T> T convert(S source, TypeDescriptor<T> targetType) {
+        return convert(source, source.getClass(), targetType.getType());
     }
 
     @Override
@@ -59,8 +69,18 @@ public class DefaultConverter implements Converter {
     }
 
     @Override
+    public <S, T> Function<S, T> convertTo(TypeDescriptor<? extends S> sourceType, TypeDescriptor<T> targetType) {
+        return source -> convert(source, sourceType, targetType);
+    }
+
+    @Override
     public <S, T> Function<S, T> convertTo(Type targetType) {
         return source -> convert(source, targetType);
+    }
+
+    @Override
+    public <S, T> Function<S, T> convertTo(TypeDescriptor<T> targetType) {
+        return source -> convert(source, targetType.getType());
     }
 
     @Override
