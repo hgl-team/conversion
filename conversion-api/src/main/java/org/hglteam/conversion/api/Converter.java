@@ -11,13 +11,17 @@ public interface Converter {
     <S, T> T convert(S source, ConversionContext context);
     <S, T> T convert(S source, ConversionKey contersionKey);
     <S, T> T convert(S source, Type sourceType, Type targetType);
+    <S, T> T convert(S source, TypeDescriptor<? extends S> sourceType, TypeDescriptor<T> targetType);
     <S, T> T convert(S source, Type targetType);
+    <S, T> T convert(S source, TypeDescriptor<T> targetType);
     <S, T> T convert(S source, Class<? extends T> targetClass);
 
     <S, T> Function<S, T> convertTo(ConversionContext context);
     <S, T> Function<S, T> convertTo(ConversionKey conversionKey);
     <S, T> Function<S, T> convertTo(Type sourceType, Type targetType);
+    <S, T> Function<S, T> convertTo(TypeDescriptor<? extends S> sourceType, TypeDescriptor<T> targetType);
     <S, T> Function<S, T> convertTo(Type targetType);
+    <S, T> Function<S, T> convertTo(TypeDescriptor<T> targetType);
     <S, T> Function<S, T> convertTo(Class<? extends T> targetClass);
 
     <T> ContextualConversionBuilder<T> withContext(Type targetType);
