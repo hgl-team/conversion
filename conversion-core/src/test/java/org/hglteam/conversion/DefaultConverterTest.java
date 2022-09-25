@@ -25,7 +25,6 @@ class DefaultConverterTest {
     private TypeConverter<?,?> typeConverter;
     private DefaultConverter converter;
 
-
     @Nested
     class ConvertUsingSourceAndTargetTypeTest {
         private BigInteger bigIntegerObtained;
@@ -43,6 +42,17 @@ class DefaultConverterTest {
         }
 
         @Test
+        void given_sourceAndTargetTypeDescritor_when_convert_then_shouldReturnValue() {
+            givenAConvertionContext();
+            givenAnIntegerToBigIntegerTypeConverter();
+            givenAConverterUsingTheConvertionContext();
+            givenAnIntegerToBeConverted();
+
+            whenIntegerGetsConvertedToBigIntegerByTypeDescriptor();
+            thenTheExpectedBigIntegerIsObtained();
+        }
+
+        @Test
         void given_targetType_when_convert_then_shouldReturnValue() {
             givenAConvertionContext();
             givenAnIntegerToBigIntegerTypeConverter();
@@ -50,6 +60,17 @@ class DefaultConverterTest {
             givenAnIntegerToBeConverted();
 
             whenIntegerGetsConvertedToBigIntegerByClass();
+            thenTheExpectedBigIntegerIsObtained();
+        }
+
+        @Test
+        void given_targetTypeDescriptor_when_convert_then_shouldReturnValue() {
+            givenAConvertionContext();
+            givenAnIntegerToBigIntegerTypeConverter();
+            givenAConverterUsingTheConvertionContext();
+            givenAnIntegerToBeConverted();
+
+            whenIntegerGetsConvertedToBigIntegerByClassWithTypeDescriptor();
             thenTheExpectedBigIntegerIsObtained();
         }
 
@@ -65,6 +86,17 @@ class DefaultConverterTest {
         }
 
         @Test
+        void given_sourceAndTargetTypeDescriptor_when_convertTo_then_shouldReturnValue() {
+            givenAConvertionContext();
+            givenAnIntegerToBigIntegerTypeConverter();
+            givenAConverterUsingTheConvertionContext();
+            givenAnIntegerToBeConverted();
+
+            whenIntegerGetsConvertedToBigIntegerUsingConvertToWithTypeDescriptor();
+            thenTheExpectedBigIntegerIsObtained();
+        }
+
+        @Test
         void given_targetType_when_convertTo_then_shouldReturnValue() {
             givenAConvertionContext();
             givenAnIntegerToBigIntegerTypeConverter();
@@ -73,6 +105,22 @@ class DefaultConverterTest {
 
             whenIntegerGetsConvertedToBigIntegerByClassUsingConvertTo();
             thenTheExpectedBigIntegerIsObtained();
+        }
+
+        @Test
+        void given_targetTypeDescriptor_when_convertTo_then_shouldReturnValue() {
+            givenAConvertionContext();
+            givenAnIntegerToBigIntegerTypeConverter();
+            givenAConverterUsingTheConvertionContext();
+            givenAnIntegerToBeConverted();
+
+            whenIntegerGetsConvertedToBigIntegerByClassUsingConvertToTypeDescriptor();
+            thenTheExpectedBigIntegerIsObtained();
+        }
+
+        private void whenIntegerGetsConvertedToBigIntegerByClassUsingConvertToTypeDescriptor() {
+            this.bigIntegerObtained = converter.<Integer, BigInteger>convertTo(new TypeDescriptor<>(){})
+                    .apply(this.integerToBeConverted);
         }
 
         private void whenIntegerGetsConvertedToBigIntegerUsingConvertTo() {
@@ -106,6 +154,24 @@ class DefaultConverterTest {
         private void thenTheExpectedBigIntegerIsObtained() {
             assertNotNull(this.bigIntegerObtained);
             assertEquals(this.integerToBeConverted, this.bigIntegerObtained.intValue());
+        }
+
+        private void whenIntegerGetsConvertedToBigIntegerByTypeDescriptor() {
+            Number number = this.integerToBeConverted;
+
+            this.bigIntegerObtained = converter.convert(number,
+                    new TypeDescriptor<Integer>(){},
+                    new TypeDescriptor<>(){});
+        }
+
+        private void whenIntegerGetsConvertedToBigIntegerByClassWithTypeDescriptor() {
+            this.bigIntegerObtained = converter.convert(this.integerToBeConverted,
+                    new TypeDescriptor<>(){});
+        }
+
+        private void whenIntegerGetsConvertedToBigIntegerUsingConvertToWithTypeDescriptor() {
+            this.bigIntegerObtained = converter.convertTo(new TypeDescriptor<Integer>(){}, new TypeDescriptor<BigInteger>(){})
+                    .apply(this.integerToBeConverted);
         }
     }
 
@@ -197,6 +263,16 @@ class DefaultConverterTest {
             thenResultIsExpected();
         }
 
+        @Test
+        void given_conversionContext_when_convertTo_then_convertUsingContext() {
+            givenAConvertionContext();
+            givenALocalDateTimeToStringConverter();
+            givenAConverterUsingTheConvertionContext();
+            givenALocalDateTimeToConvert();
+            whenConvertLocalDateTimeToStringUsingConvertTo();
+            thenResultIsExpected();
+        }
+
         private void whenConvertLocalDateTimeToStringUsingConvertToByTypeDescriptor() {
             this.result = converter.withContext(new TypeDescriptor<String>(){})
                     .withArg("format", EXPECTED_DATE_TIME_FORMATTER)
@@ -209,16 +285,6 @@ class DefaultConverterTest {
             this.result = converter.<String>withContext(type)
                     .withArg("format", EXPECTED_DATE_TIME_FORMATTER)
                     .convert(this.localDateTime);
-        }
-
-        @Test
-        void given_conversionContext_when_convertTo_then_convertUsingContext() {
-            givenAConvertionContext();
-            givenALocalDateTimeToStringConverter();
-            givenAConverterUsingTheConvertionContext();
-            givenALocalDateTimeToConvert();
-            whenConvertLocalDateTimeToStringUsingConvertTo();
-            thenResultIsExpected();
         }
 
         private void whenConvertLocalDateTimeToStringUsingConvertTo() {
@@ -255,7 +321,7 @@ class DefaultConverterTest {
     }
 
     @Nested
-    class ConvertUsingTargetTypeTest {
+    class ConvertUsingTargetTypeAndTypeDescriptorTest {
         private String source;
         private List<String> result;
 
@@ -270,6 +336,16 @@ class DefaultConverterTest {
         }
 
         @Test
+        void given_conversionContextAndTypeDescriptor_when_convert_then_convertUsingContext() {
+            givenAConvertionContext();
+            givenAStringToListStringConverter();
+            givenAConverterUsingTheConvertionContext();
+            givenAStringToConvert();
+            whenConvertStringToListStringWithTypeDescriptor();
+            thenResultIsExpected();
+        }
+
+        @Test
         void given_conversionContext_when_convertTo_then_convertUsingContext() {
             givenAConvertionContext();
             givenAStringToListStringConverter();
@@ -277,6 +353,25 @@ class DefaultConverterTest {
             givenAStringToConvert();
             whenConvertStringToListStringUsingConvertTo();
             thenResultIsExpected();
+        }
+
+        @Test
+        void given_conversionContextAndTypeDescriptor_when_convertTo_then_convertUsingContext() {
+            givenAConvertionContext();
+            givenAStringToListStringConverter();
+            givenAConverterUsingTheConvertionContext();
+            givenAStringToConvert();
+            whenConvertStringToListStringUsingConvertToWithTypeDescriptor();
+            thenResultIsExpected();
+        }
+
+        private void whenConvertStringToListStringUsingConvertToWithTypeDescriptor() {
+            this.result = converter.<String, List<String>>convertTo(new TypeDescriptor<>(){})
+                    .apply(source);
+        }
+
+        private void whenConvertStringToListStringWithTypeDescriptor() {
+            this.result = converter.convert(source, new TypeDescriptor<>(){});
         }
 
         private void whenConvertStringToListStringUsingConvertTo() {
