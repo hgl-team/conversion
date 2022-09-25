@@ -24,7 +24,7 @@ We've defined a convenient bom to handle artifact versions for you.
   <dependency>
       <groupId>org.hglteam</groupId>
       <artifactId>conversion-bom</artifactId>
-      <version>3.0.4-SNAPSHOT</version>
+      <version>3.0.5-SNAPSHOT</version>
       <type>pom</type>
   </dependency>
 </dependency-management>
