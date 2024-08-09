@@ -400,8 +400,7 @@ class DefaultConverterTest {
 
     private static String dateToStringConverter(ConversionContext context, LocalDateTime source) {
         var format = context.<String>getArgument("format");
-        var locale = context.<Locale>argument("locale")
-                .orElse(Locale.getDefault());
+        var locale = context.argument("locale", Locale.class).orElse(Locale.getDefault());
         var formatter = DateTimeFormatter.ofPattern(format, locale);
 
         return source.format(formatter);
