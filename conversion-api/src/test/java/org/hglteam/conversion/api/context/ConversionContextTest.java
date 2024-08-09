@@ -9,6 +9,7 @@ import java.io.Closeable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -74,6 +75,26 @@ class ConversionContextTest {
                 .build();
 
         assertEquals(EXPECTED_ARG_VALUE, context.<Long>getArgument(ARGUMENT_KEY));
+    }
+
+    @Test
+    void should_getArgument_when_optionalArgumentExists() {
+        var context = ConversionContext.builder()
+                .arguments(Map.ofEntries(
+                        Map.entry(ARGUMENT_KEY, Optional.of(EXPECTED_ARG_VALUE))))
+                .build();
+
+        assertEquals(EXPECTED_ARG_VALUE, context.getRequiredArgument(ARGUMENT_KEY, Long.class));
+    }
+
+    @Test
+    void should_getArgument_when_requiredArgumentExists() {
+        var context = ConversionContext.builder()
+                .arguments(Map.ofEntries(
+                        Map.entry(ARGUMENT_KEY, EXPECTED_ARG_VALUE)))
+                .build();
+
+        assertEquals(EXPECTED_ARG_VALUE, context.getRequiredArgument(ARGUMENT_KEY, Long.class));
     }
 
     @Test

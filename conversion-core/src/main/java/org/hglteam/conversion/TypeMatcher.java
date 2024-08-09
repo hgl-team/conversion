@@ -7,12 +7,13 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public final class TypeMatcher {
     private TypeMatcher() { }
-    private static final Map<ConversionKey, Boolean> previousMatches = new HashMap<>();
+    private static final Map<ConversionKey, Boolean> previousMatches = new ConcurrentHashMap<>();
 
     public static boolean isAssignableFrom(Type source, Type target) {
         var convertionKey = DefaultConversionKey.builder()

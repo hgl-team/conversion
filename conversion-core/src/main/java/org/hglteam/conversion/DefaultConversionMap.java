@@ -6,10 +6,29 @@ import org.hglteam.conversion.api.ExplicitTypeConverter;
 import org.hglteam.conversion.api.TypeConverter;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 public class DefaultConversionMap implements ConversionMap {
-    private final Map<ConversionKey, TypeConverter<?, ?>> converterMap = new HashMap<>();
-    private final Map<ConversionKey, ConversionKey> compatibilityMap = new HashMap<>();
+    private final Map<ConversionKey, TypeConverter<?, ?>> converterMap;
+    private final Map<ConversionKey, ConversionKey> compatibilityMap;
+
+    public DefaultConversionMap(
+            Map<ConversionKey, TypeConverter<?, ?>> converterMap,
+            Map<ConversionKey, ConversionKey> compatibilityMap) {
+        this.converterMap = converterMap;
+        this.compatibilityMap = compatibilityMap;
+    }
+
+    public DefaultConversionMap(
+            Supplier<Map<ConversionKey, TypeConverter<?, ?>>> converterMapSupplier,
+            Supplier<Map<ConversionKey, ConversionKey>> compatibilityMapSupplier) {
+        this(converterMapSupplier.get(), compatibilityMapSupplier.get());
+    }
+
+    public DefaultConversionMap() {
+        this(ConcurrentHashMap::new, ConcurrentHashMap::new);
+    }
 
     @Override
     public ConversionMap register(ConversionKey key, TypeConverter<?, ?> converter) {
